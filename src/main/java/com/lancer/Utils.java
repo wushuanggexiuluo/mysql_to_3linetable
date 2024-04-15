@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static javax.swing.text.StyleConstants.ALIGN_CENTER;
+
 
 public class Utils {
     public static String out_path = "X:\\";
@@ -167,6 +169,7 @@ public class Utils {
         try {
             Cell cell = new Cell(new Paragraph(content, font));
             cell.disableBorderSide(15);
+            cell.setHorizontalAlignment(ALIGN_CENTER);
             table.addCell(cell);
         } catch (Exception e) {
             e.printStackTrace();
