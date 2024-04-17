@@ -7,9 +7,11 @@
 
 
 ## 使用方法 
+### -- 发行版无法运行的就下载代码放在IDEA中启动即可 --
 ### 1 发行版下载、直接控制台/终端运行
 #### 发行版下载
 https://gitee.com/wsgxl/mysql_to_3linetable/releases
+
 #### 打开终端运行
 ![Snipaste_2024-04-17_11-38-18.png](img%2FSnipaste_2024-04-17_11-38-18.png)
 ### 2 输入相关信息
