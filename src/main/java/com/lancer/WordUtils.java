@@ -25,13 +25,13 @@ import java.util.List;
 import static javax.swing.text.StyleConstants.ALIGN_CENTER;
 
 
-public class Utils {
+public class WordUtils {
     public static String out_path = "X:\\";
     public static String dbHost = "127.0.0.1";
     public static int dbPort = 3306;
-    public static String dbName = "snowy-cloud";
+    public static String dbName = "";
     public static String userName = "root";
-    public static String password = "scm13503905942";
+    public static String password = "";
     // 单元格5号字体
     public static final float tbTitleFontSize = 10.5F;
     // 单元格头字体大小
@@ -60,6 +60,7 @@ public class Utils {
                 file.createNewFile();
             }catch (Exception e){
                 System.out.println("当前路径没有权限访问，请使用其他路径！");
+                return;
             }
             // 写入文件信息
             RtfWriter2.getInstance(document, Files.newOutputStream(Paths.get(fileName)));
@@ -207,7 +208,47 @@ public class Utils {
     private static void printMsg(String format, Object... args) {
         System.out.printf((format) + "%n", args);
     }
+    public static void showAllDbName(DataSource ds) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<TableInfo> list = Lists.newArrayList();
+        try {
+            // 获取数据库元数据
+            DatabaseMetaData metaData =  ds.getConnection().getMetaData();
 
+            // 获取所有数据库名称
+            ResultSet resultSet = metaData.getCatalogs();
+            List<String> databaseNames = new ArrayList<>();
+            while (resultSet.next()) {
+                String databaseName = resultSet.getString("TABLE_CAT");
+                // 排除MySQL自带的系统数据库
+                if (!"information_schema".equals(databaseName) &&
+                        !"mysql".equals(databaseName) &&
+                        !"performance_schema".equals(databaseName) &&
+                        !"sys".equals(databaseName)) {
+                    databaseNames.add(databaseName);
+                }
+            }
+            resultSet.close();
+            System.out.println("所有的数据库如下：\n");
+            int count = 0;
+            for (String dbName : databaseNames) {
+                System.out.print(dbName + "\t");
+                count++;
+                if (count % 4 == 0) {
+                    System.out.println();
+                }
+            }
+            System.out.println("\n");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            JdbcUtils.close(rs);
+            JdbcUtils.close(stmt);
+            JdbcUtils.close(conn);
+        }
+    }
     private static List<TableInfo> getTableInfos(DataSource ds, String databaseName) throws SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
