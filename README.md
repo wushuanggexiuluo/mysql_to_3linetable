@@ -9,7 +9,7 @@
 ## 使用方法 
 ### 1 发行版下载、直接控制台运行
 #### 发行版下载
-![输入图片说明](imgimage.png) 
+https://gitee.com/wsgxl/mysql_to_3linetable/releases
 #### 打开终端运行
 ![输入图片说明](https://foruda.gitee.com/images/1713168266437203337/0c5df99d_10104977.png "屏幕截图")
 ### 2 输入相关信息
