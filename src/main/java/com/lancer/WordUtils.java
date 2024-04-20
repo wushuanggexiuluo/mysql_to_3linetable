@@ -2,8 +2,8 @@ package com.lancer;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.util.JdbcUtils;
-import com.lowagie.text.Font;
 import com.lowagie.text.*;
+import com.lowagie.text.Font;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.rtf.RtfWriter2;
 import org.apache.commons.lang3.ObjectUtils;
@@ -32,12 +32,22 @@ public class WordUtils {
     public static String dbName = "";
     public static String userName = "root";
     public static String password = "";
-    // 单元格5号字体
-    public static final float tbTitleFontSize = 10.5F;
+
+    // 设置生成的页面属性
+    // 上下页面边距
+    static float top_bottom = (float) (2.52 * 28.35);
+    // 左右页面边距
+    static float left_right = (float) (3.18 * 28.35);
+    // 生成的表格属性
+
+    // 单元格中的字体 5号字体
+    public static final float tbTitleFontSize = 10.500000F;
     // 单元格头字体大小
-    public static final float cellFontSize = 10.5F;
+    public static final float cellFontSize = 10.500000F;
     // 单元格头字体大小
-    public static final float cellHeaderFontSize = 10.5F;
+    public static final float cellHeaderFontSize = 10.500000F;
+    // 是否设置表格自适应大小
+    static boolean isSetTbAutoAdapt=true;
     // 需要排除的字段
     final static List<String> excludeWord = Arrays.asList("create_time", "update_time", "create_user", "update_user", "delete_flag");
     static BaseFont chinaTxtFont;
@@ -46,6 +56,8 @@ public class WordUtils {
         String fileName=dbName + ".doc";
         List<TableInfo> tables = getTableInfos(ds, dbName);
         Document document = new Document(PageSize.A4);
+        // 设置页面的页边距为常规
+        document.setMargins(left_right, left_right, top_bottom, top_bottom);
         try {
             File dir = new File(out_path);
             if (!dir.exists()) {
@@ -82,14 +94,13 @@ public class WordUtils {
         printMsg("共需要处理%d个表", tables.size());
         int colNum = 7;
         //循环处理每一张表
-        for (int i = 0; i < tables.size(); i++) {
-            TableInfo tableInfo = tables.get(i);
+        for (TableInfo tableInfo : tables) {
             String tblName = tableInfo.getTblName();
             String tblComment = tableInfo.getTblComment();
 
             printMsg("处理%s表开始", tableInfo);
             List<TableFiled> fileds = new ArrayList<>();
-            List<TableFiled> fileds2 = getTableFields(ds, tables.get(i).getTblName());
+            List<TableFiled> fileds2 = getTableFields(ds, tableInfo.getTblName());
             // 去除常见的
             for (TableFiled filed : fileds2) {
                 String lowerCase = filed.getField().toLowerCase();
@@ -99,17 +110,23 @@ public class WordUtils {
             }
             Table table = new Table(colNum);
             int[] widths = new int[]{160, 250, 350, 160, 80, 120, 80};
-            table.setWidths(widths);
+            // table.setWidths(widths);
+            if (isSetTbAutoAdapt){
+                table.setWidth(100);
+            }
             table.setPadding(0);
             table.setSpacing(0);
-
+            String tblInfo="";
             //添加表名行
-            String tblInfo = StringUtils.isBlank(tblComment) ? tblName : String.format("表 -%s %s表", i, tblComment.replace("表", ""));
-
+            if (StringUtils.isNoneBlank(tblComment)){
+                tblInfo=tblComment;
+            }
+            else {
+                tblInfo=tblName;
+            }
             Paragraph ph = new Paragraph(tblInfo, new Font(chinaTxtFont, tbTitleFontSize));
             ph.setAlignment(Paragraph.ALIGN_CENTER);
             document.add(ph);
-            Font font = new Font(chinaTxtFont, cellHeaderFontSize);
 
             //添加表头行
             addCell(table, "字段名", 0);
@@ -124,12 +141,13 @@ public class WordUtils {
             // 表格的主体
             for (k = 0; k < fileds.size(); k++) {
                 TableFiled field = fileds.get(k);
+                // 统一转小写
                 String lowerCase = field.getField().toLowerCase();
                 String comment = field.getComment();
                 String extra = field.getExtra();
-                if (ObjectUtils.isNotEmpty(extra)){
-                    if (extra.equals("auto_increment")){
-                        extra="自增";
+                if (ObjectUtils.isNotEmpty(extra)) {
+                    if (extra.equals("auto_increment")) {
+                        extra = "自增";
                     }
                 }
                 // 设置下框线
@@ -151,6 +169,7 @@ public class WordUtils {
                 addCell(table, field.getKey().equals("PRI") ? "是" : "否");
                 addCell(table, extra);
             }
+
             document.add(table);
             printMsg("处理%s表结束", tableInfo);
         }
@@ -179,6 +198,7 @@ public class WordUtils {
 
     private static void addCell(Table table, String content, int width, int align, int flag) {
         try {
+
             Font font = new Font(chinaTxtFont, cellFontSize);
             Cell cell = new Cell(new Paragraph(content, font));
             if (width > 0) cell.setWidth(width);

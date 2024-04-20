@@ -21,7 +21,7 @@ https://gitee.com/wsgxl/mysql_to_3linetable/releases
 ## 定制方法：
 ### 1 下载代码
 ### 2 修改这些信息即可
-![Snipaste_2024-04-17_11-35-37.png](img%2FSnipaste_2024-04-17_11-35-37.png)
+
 ### 3 详细修改,请阅读代码
 
 有用的期待您的赞赏 :bowtie:  :bowtie: 
