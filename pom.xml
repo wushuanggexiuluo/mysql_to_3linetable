@@ -80,6 +80,7 @@
     </dependencyManagement>
 
     <build>
+        <finalName>${project.artifactId}-v1</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
